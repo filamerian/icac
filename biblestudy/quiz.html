@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Genesis-Exodus Quiz (20 Items)</title>
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --panel: #141a22;
+      --panel-2: #0f141b;
+      --txt: #e6edf3;
+      --muted: #9fb0c0;
+      --brand: #7cc5ff;
+      --accent: #7ee787;
+      --danger: #ff7b72;
+      --warning: #ffdf6b;
+      --border: #233042;
+      --focus: #2f81f7;
+    }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--txt);
+      background: radial-gradient(1200px 800px at 20% -10%, #0f1822 0%, var(--bg) 40%),
+                  radial-gradient(800px 600px at 120% 0%, #0c1117 0%, var(--bg) 50%);
+      line-height: 1.55;
+    }
+    .container { max-width: 980px; margin: 0 auto; padding: 2rem 1rem 6rem; }
+    header { display:flex; align-items:center; justify-content:space-between; gap: 1rem; margin-bottom: 1.25rem; }
+    .title { font-size: clamp(1.4rem, 1.1rem + 1.2vw, 2rem); font-weight: 800; letter-spacing: 0.2px; }
+    .subtitle { color: var(--muted); font-size: 0.98rem; }
+
+    .card { background: linear-gradient(180deg, var(--panel) 0%, var(--panel-2) 100%);
+            border: 1px solid var(--border); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,.35);
+            overflow: hidden; }
+    .card-header { padding: 1rem 1.25rem; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:.75rem; flex-wrap: wrap; }
+    .card-body { padding: 1rem 1.25rem; }
+
+    .controls { display:flex; gap:.75rem; flex-wrap:wrap; }
+    button, .btn {
+      background: #17212b; color: var(--txt); border: 1px solid var(--border); padding: .7rem 1rem; border-radius: 10px;
+      cursor: pointer; font-weight: 600; transition: transform .06s ease, border-color .2s, box-shadow .2s;
+    }
+    button:hover { border-color: var(--focus); box-shadow: 0 0 0 3px rgba(47,129,247,.15) inset; }
+    button:active { transform: translateY(1px); }
+    .primary { background: linear-gradient(180deg, #1b2836 0%, #122032 100%); border-color: #294663; }
+
+    .pill { font-size:.85rem; background:#0d1a25; color: var(--brand); border: 1px solid #1c3954; padding:.35rem .6rem; border-radius: 999px; }
+
+    .question { border-top: 1px dashed var(--border); padding-top: 1rem; margin-top: 1rem; }
+    .qhead { font-weight: 700; margin-bottom: .75rem; }
+
+    .options { display:grid; gap:.5rem; }
+    .opt { position: relative; border:1px solid var(--border); background:#0e141b; border-radius: 12px; }
+    .opt input { position: absolute; inset:0; opacity:0; }
+    .opt label { display:block; padding: .75rem .875rem .8rem 2.8rem; cursor: pointer; }
+    .opt:focus-within { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+    .opt .bullet { position:absolute; left:.6rem; top:50%; transform:translateY(-50%); width: 1.4rem; height: 1.4rem; border-radius: 50%; border: 2px solid #2a3a4b; display:grid; place-items:center; }
+    .opt .bullet::after { content:""; width:.75rem; height:.75rem; border-radius:50%; background:transparent; transition: background .2s; }
+    .opt input:checked + label + .bullet::after { background: var(--brand); }
+
+    .legend { color: var(--muted); font-size: .92rem; }
+
+    .results { margin-top: 1.25rem; display:none; }
+    .score { font-size: clamp(1.2rem, 1.1rem + 0.6vw, 1.6rem); font-weight: 900; }
+    .badge { display:inline-block; padding:.25rem .55rem; border-radius: 999px; font-size: .8rem; border: 1px solid var(--border); }
+    .badge.ok { color: var(--accent); border-color: rgba(126,231,135,.4); background: rgba(126,231,135,.08); }
+    .badge.no { color: var(--danger); border-color: rgba(255,123,114,.35); background: rgba(255,123,114,.08); }
+
+    .summary { margin-top: .75rem; display: grid; gap: .75rem; }
+    .summary-item { border: 1px solid var(--border); border-radius: 12px; background: #0d141c; padding: .8rem; }
+    .summary-title { display:flex; justify-content:space-between; align-items:center; gap:.75rem; font-weight:700; }
+    .summary-body { color: var(--muted); margin-top: .5rem; }
+    .small { font-size: .9rem; }
+
+    .footer-note { margin-top: 1rem; color: var(--muted); font-size: .92rem; }
+
+    .grid-2 { display:grid; gap: .75rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    .hidden { display:none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div>
+        <div class="title">ICAC-Roxas Bible Study on Genesis &amp; Exodus<br>
+        Multiple Choice Quiz</div>
+        <div class="subtitle">The arc of redemption from Creation to Tabernacle (20 items)</div>
+      </div>
+      <span class="pill" id="progress">0 / 20 answered</span>
+    </header>
+
+    <div class="card" role="region" aria-label="Quiz">
+      <div class="card-header grid-2">
+        <div class="legend">Choose the best answer for each question. When finished, click <strong>Submit</strong> to see your score and a detailed explanation for every item.</div>
+        <div class="controls" style="justify-content:flex-end; align-items:center;">
+          <button id="clearBtn" title="Clear all answers">Clear</button>
+          <button class="primary" id="submitBtn" title="Submit your answers">Submit</button>
+        </div>
+      </div>
+      <form class="card-body" id="quizForm">
+        <div id="questions"></div>
+      </form>
+    </div>
+
+    <div class="results card" id="resultsCard" aria-live="polite">
+      <div class="card-header">
+        <div class="score" id="scoreText">Your Score: 0 / 20</div>
+      </div>
+      <div class="card-body">
+        <div class="summary" id="summary"></div>
+        <div class="footer-note">Tip: Use the <em>Retake</em> button below to try again, or scroll up to review your choices.</div>
+        <div class="controls" style="margin-top:.75rem;">
+          <button id="retakeBtn">Retake</button>
+          <button id="showCorrectBtn">Fill Correct Answers</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const data = [
+      {
+        q: "In Genesis 1-2, what does it chiefly mean that humanity is made in the 'image of God'?",
+        options: [
+          "Humans physically resemble God",
+          "Humans possess dignity, relational capacity, and a vocation to represent God",
+          "Humans are inherently divine",
+          "Humans were created immortal and cannot die"
+        ],
+        answer: 1,
+        explain: "Imago Dei speaks to dignity, relationship, moral agency, and representing God's rule (Gen 1:26-28), forming the basis for redemption."
+      },
+      {
+        q: "Genesis 3:15 is often called the 'protoevangelium.' What is promised?",
+        options: [
+          "A new law on Sinai",
+          "A descendant who will crush the serpent's head",
+          "The rainbow as covenant sign",
+          "A worldwide flood"
+        ],
+        answer: 1,
+        explain: "God promises a coming offspring who will defeat the serpent—first whisper of the gospel (Gen 3:15)."
+      },
+      {
+        q: "Who 'found favor in the eyes of the LORD,' leading to deliverance through an ark",
+        options: ["Abraham", "Moses", "Noah", "Joseph"],
+        answer: 2,
+        explain: "Noah found favor (Gen 6:8); the ark becomes a sign of salvation amid judgment."
+      },
+      {
+        q: "What is the sign of God's covenant with Noah after the flood?",
+        options: ["Circumcision", "Rainbow", "Sabbath", "Passover Lamb"],
+        answer: 1,
+        explain: "God set the rainbow as the covenant sign, promising not to destroy the earth by flood again (Gen 9:12-17)."
+      },
+      {
+        q: "In salvation typology, what does the ark primarily foreshadow?",
+        options: ["The Church building", "Christ as our refuge from judgment", "The Ten Commandments", "The Tower of Babel"],
+        answer: 1,
+        explain: "The ark prefigures Christ, in whom we are safe from God's righteous judgment."
+      },
+      {
+        q: "Why did God confuse human language at Babel (Gen 11)?",
+        options: [
+          "To punish agriculture",
+          "To prevent unified prideful rebellion and scatter the nations",
+          "To end all construction",
+          "To create new religions"
+        ],
+        answer: 1,
+        explain: "Language confusion restrained collective rebellion and led to scattering—both judgment and mercy."
+      },
+      {
+        q: "What core promise did God make to Abraham in Genesis 12:3?",
+        options: [
+          "Personal immortality",
+          "A new Eden immediately",
+          "Blessing to all the families of the earth",
+          "A golden calf for worship"
+        ],
+        answer: 2,
+        explain: "Through Abraham's offspring, all nations would be blessed—backbone of redemptive history."
+      },
+      {
+        q: "Joseph's statement 'You meant evil against me, but God meant it for good' (Gen 50:20) highlights what doctrine?",
+        options: ["Human autonomy only", "Divine providence", "Karma", "Open theism"],
+        answer: 1,
+        explain: "Joseph recognizes God's providence, using suffering to preserve life."
+      },
+      {
+        q: "Which decree did Pharaoh issue in Exodus 1 to suppress Israel?",
+        options: [
+          "All must keep Sabbath",
+          "All Hebrew male infants should be killed",
+          "All must worship at Sinai",
+          "All Israelites must leave Egypt"
+        ],
+        answer: 1,
+        explain: "Pharaoh commanded that every Hebrew son be cast into the Nile (Exod 1:22)."
+      },
+      {
+        q: "What does the name 'Moses' signify in Exodus 2:10?",
+        options: ["Redeemed", "Drawn out", "Beloved", "Prince"],
+        answer: 1,
+        explain: "Pharaoh's daughter named him Moses, 'because I drew him out of the water.'"
+      },
+      {
+        q: "At the burning bush, what does God declare about Israel's suffering?",
+        options: [
+          "It is unknown to Him",
+          "He has seen, heard, and has come down to deliver",
+          "It will continue forever",
+          "It is deserved and ignored"
+        ],
+        answer: 1,
+        explain: "Exod 3:7-8: God has seen their affliction and comes to deliver."
+      },
+      {
+        q: "What protected Israelite households during the final plague (Exodus 12)?",
+        options: ["Incense", "Blood of the lamb on the doorposts", "Prayer shawls", "Golden calf"],
+        answer: 1,
+        explain: "When God saw the blood, He 'passed over' those homes (Exod 12:13)."
+      },
+      {
+        q: "The Red Sea crossing primarily teaches that salvation is...",
+        options: [
+          "Earned by human effort",
+          "A result of Israel's military might",
+          "By God's grace and power, not Israel's strength",
+          "A legend without meaning"
+        ],
+        answer: 2,
+        explain: "'The LORD will fight for you' (Exod 14:14); God parts the sea and saves."
+      },
+      {
+        q: "At Sinai, God calls Israel to be... (Exodus 19:6)",
+        options: [
+          "A democracy",
+          "A kingdom of priests and a holy nation",
+          "A federation of tribes only",
+          "A military empire"
+        ],
+        answer: 1,
+        explain: "Exod 19:6 summarizes Israel's vocation in the covenant."
+      },
+      {
+        q: "Which comes first in Exodus: law or deliverance?",
+        options: ["Law, then deliverance", "Deliverance, then law", "They are simultaneous", "Neither occurs"],
+        answer: 1,
+        explain: "God redeems Israel from Egypt before giving the Law—obedience is a response to grace."
+      },
+      {
+        q: "What is the primary purpose of the Tabernacle (Exodus 25-40)?",
+        options: [
+          "A museum for Egyptian artifacts",
+          "A marketplace",
+          "A dwelling place for God among His people",
+          "A royal tomb"
+        ],
+        answer: 2,
+        explain: "'Let them make Me a sanctuary, that I may dwell in their midst' (Exod 25:8)."
+      },
+      {
+        q: "The Passover lamb ultimately foreshadows...",
+        options: ["Samson", "Jesus, the Lamb of God", "Aaron", "David"],
+        answer: 1,
+        explain: "The NT identifies Jesus as the Lamb whose blood secures deliverance (cf. John 1:29; 1 Cor 5:7)."
+      },
+      {
+        q: "Which Exodus event most clearly prefigures Christian baptism?",
+        options: ["Manna in the wilderness", "Crossing the Red Sea", "Water from the rock", "Golden calf incident"],
+        answer: 1,
+        explain: "Passing through the sea symbolizes passing from slavery to freedom, death to life (cf. 1 Cor 10:1-2)."
+      },
+      {
+        q: "Who discovered and raised Moses from infancy?",
+        options: ["Miriam", "Jethro's wife", "Pharaoh's daughter", "Zipporah"],
+        answer: 2,
+        explain: "Pharaoh's daughter drew Moses from the Nile and raised him in the palace (Exod 2:5-10)."
+      },
+      {
+        q: "How does Pentecost in Acts 2 relate to Babel in Genesis 11?",
+        options: [
+          "It repeats the judgment",
+          "It abolishes all languages",
+          "It begins a reversal by enabling understanding across languages",
+          "It creates a new tower"
+        ],
+        answer: 2,
+        explain: "The Spirit enables proclamation understood by many tongues—anticipating the gathering of the nations."
+      }
+    ];
+
+    const questionsEl = document.getElementById('questions');
+    const progressEl = document.getElementById('progress');
+    const formEl = document.getElementById('quizForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const resultsCard = document.getElementById('resultsCard');
+    const scoreText = document.getElementById('scoreText');
+    const summaryEl = document.getElementById('summary');
+    const retakeBtn = document.getElementById('retakeBtn');
+    const showCorrectBtn = document.getElementById('showCorrectBtn');
+
+    function renderQuestions() {
+      questionsEl.innerHTML = '';
+      data.forEach((item, idx) => {
+        const qWrap = document.createElement('section');
+        qWrap.className = 'question';
+        qWrap.innerHTML = `
+          <div class="qhead">${idx+1}. ${item.q}</div>
+          <div class="options" role="group" aria-labelledby="q${idx}">
+            ${item.options.map((opt, i) => `
+              <div class="opt">
+                <input type="radio" name="q${idx}" id="q${idx}o${i}" value="${i}" aria-labelledby="q${idx}l${i}">
+                <label id="q${idx}l${i}" for="q${idx}o${i}"><strong>${String.fromCharCode(65+i)}.</strong> ${opt}</label>
+                <span class="bullet" aria-hidden="true"></span>
+              </div>
+            `).join('')}
+          </div>
+        `;
+        questionsEl.appendChild(qWrap);
+      });
+    }
+
+    function getAnswers() {
+      const answers = [];
+      data.forEach((_, idx) => {
+        const checked = formEl.querySelector(`input[name="q${idx}"]:checked`);
+        answers.push(checked ? Number(checked.value) : null);
+      });
+      return answers;
+    }
+
+    function updateProgress() {
+      const ans = getAnswers();
+      const count = ans.filter(a => a !== null).length;
+      progressEl.textContent = `${count} / ${data.length} answered`;
+    }
+
+    function grade(answers) {
+      let correct = 0;
+      const detail = data.map((item, i) => {
+        const isCorrect = answers[i] === item.answer;
+        if (isCorrect) correct++;
+        return {
+          index: i,
+          question: item.q,
+          chosen: answers[i],
+          correctIndex: item.answer,
+          options: item.options,
+          isCorrect,
+          explain: item.explain
+        };
+      });
+      return { correct, detail };
+    }
+
+    function showResults(result) {
+      summaryEl.innerHTML = '';
+      scoreText.textContent = `Your Score: ${result.correct} / ${data.length}`;
+      result.detail.forEach(row => {
+        const div = document.createElement('div');
+        div.className = 'summary-item';
+        const userAns = row.chosen !== null ? `${String.fromCharCode(65 + row.chosen)}. ${row.options[row.chosen]}` : '<em>No answer</em>';
+        const correctAns = `${String.fromCharCode(65 + row.correctIndex)}. ${row.options[row.correctIndex]}`;
+        div.innerHTML = `
+          <div class="summary-title">
+            <div>${row.index+1}. ${row.question}</div>
+            <span class="badge ${row.isCorrect ? 'ok' : 'no'}">${row.isCorrect ? 'Correct' : 'Incorrect'}</span>
+          </div>
+          <div class="summary-body">
+            <div class="small"><strong>Your answer:</strong> ${userAns}</div>
+            <div class="small"><strong>Correct answer:</strong> ${correctAns}</div>
+            <div class="small" style="margin-top:.4rem;"><strong>Explanation:</strong> ${row.explain}</div>
+          </div>
+        `;
+        summaryEl.appendChild(div);
+      });
+      resultsCard.style.display = 'block';
+      resultsCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function clearAll() {
+      const inputs = formEl.querySelectorAll('input[type="radio"]');
+      inputs.forEach(r => r.checked = false);
+      updateProgress();
+    }
+
+    function fillCorrect() {
+      data.forEach((item, idx) => {
+        const input = formEl.querySelector(`#q${idx}o${item.answer}`);
+        if (input) input.checked = true;
+      });
+      updateProgress();
+    }
+
+    // Event listeners
+    formEl.addEventListener('change', updateProgress);
+    submitBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      const ans = getAnswers();
+      const result = grade(ans);
+      showResults(result);
+    });
+
+    clearBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      clearAll();
+    });
+
+    retakeBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      clearAll();
+      resultsCard.style.display = 'none';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    showCorrectBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      fillCorrect();
+      const ans = getAnswers();
+      const result = grade(ans);
+      showResults(result);
+    });
+
+    // Init
+    renderQuestions();
+    updateProgress();
+  </script>
+</body>
+</html>
